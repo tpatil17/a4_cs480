@@ -18,7 +18,7 @@ int main(int argc, char* argv[]){
 
 
     
-    while ((option = getopt(argc, argv, "s:x:g:v:")) != -1) { // identify if alpha is specified through command line
+    while ((option = getopt(argc, argv, "s:x:r:g:v:")) != -1) { // identify if alpha is specified through command line
         switch (option) {
             case 's':
                 max_requests = strtof(optarg, NULL);  // set the maximum numbers of requests to entertain
