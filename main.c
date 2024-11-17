@@ -4,6 +4,9 @@
 #include<string.h>
 #include<pthread.h>
 #include<unistd.h>
+#include<semaphore.h>
+#include "monitor.h"
+#include "log.h"
 #define NORMAL_EXIT 0
 
 int main(int argc, char* argv[]){
@@ -41,11 +44,43 @@ int main(int argc, char* argv[]){
     }
     // Debug statements for the get opt functionality
 
+    
     printf("The total number of requests to be entertained: %d\n", max_requests);
     printf("The time taken by t-x robot to resplve a request: %d\n", t_x_time);
     printf("The time taken by rev-9 robot to resolve a request: %d\n", rev_9_time);
     printf("The time taken by general robot tot create a request: %d\n", gen_time);
     printf("The time taken by vip robot tot create a request: %d\n", vip_time);
+
+    // create a monitor sturct to use 
+    monitor* syn_monitor = init_monitor(max_requests);
+
+    //asign sleep times
+    syn_monitor->general_sleep = gen_time;
+    syn_monitor->t_x_sleep = t_x_time;
+    syn_monitor->vip_sleep = vip_time;
+    syn_monitor->rev_9_sleep = rev_9_time;
+    
+
+    pthread_t general_greeter; // bot that greets/produces general seat members
+    // create the generla producer thread and initialise it
+    // call the producer function to simulate
+    pthread_create(&general_greeter, NULL, producer_general, syn_monitor);
+    // create a consumre thread
+    pthread_t t_x; // T-x bot 
+    // create a consumer t-x thread to consume requestsd
+    // call the  consumer_t_x function 
+    pthread_create(&t_x, NULL, consumer_t_x, syn_monitor);
+
+    // wait signal barrier for general producer and wait on it
+    sem_wait(syn_monitor->barrier_gen);
+    // wait on the consumer t-x to fininsh
+    sem_wait(syn_monitor->barrier_t_x);
+
+    //print the consumption history report
+    output_production_history(syn_monitor->requests_count_arr, syn_monitor->consumed_count_arr);
+
+
+
 
     return 0;
 

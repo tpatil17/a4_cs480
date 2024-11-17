@@ -19,7 +19,7 @@ extern const char *consumerNames[];
 /**
  * The queue can hold up to a maximum of 18 unconsumed requests 
  * in its request queue at any given time.
- * e.	there can be no more than 6 VIP room requests 
+ * e.	there can be no more than 5 VIP room requests 
  * in the request queue at any given time. 
 */
 

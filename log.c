@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <time.h>
-
+#include "seating.h"
 #include "log.h"
 
 /*
@@ -36,7 +36,8 @@ double elapsed_s() {
   const double ns_per_s = 1e9; /* nanoseconds per second */
 
   /* Initialize the first time we call this */
-  static timespec start;
+  static struct timespec start;
+
   static int firsttime = 1;
 
   struct timespec t;
@@ -136,7 +137,7 @@ void output_request_added(RequestType requestType,
  * 
  * Counts reflect numbers *after* the request has been removed
  */
-void output_request_removed(Consumers consumer, 
+void output_request_removed(ConsumerType consumer, 
                             RequestType requestType,
                             unsigned int consumed[],
                             unsigned int inRequestQueue[]) {

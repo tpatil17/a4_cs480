@@ -16,7 +16,7 @@ CCFLAGS = -std=c11 -g -Wall -c
 CFLAGS = -g -c
 
 # object files
-OBJS = main.o #BitMasker.o log.o PageTableLevel.o tracereader.o tlb.o
+OBJS = main.o monitor.o log.o queue.o
 
 # Program name
 PROGRAM = dineseating
@@ -28,20 +28,14 @@ $(PROGRAM) : $(OBJS)
 main.o : main.c 
 	$(CC) $(CCFLAGS) main.c
 
-#PageTableLevel.o : PageTableLevel.c PageTableLevel.h 
-#	$(CC) $(CCFLAGS) PageTableLevel.c
+monitor.o : monitor.c monitor.h seating.h
+	$(CC) $(CCFLAGS) monitor.c
 
-#BitMasker.o : BitMasker.c BitMasker.h
-#	$(CC) $(CCFLAGS) BitMasker.c
+log.o : log.c log.h seating.h
+	$(CC) $(CCFLAGS) log.c
 
-#tracereader.o : tracereader.c tracereader.h
-#	$(CC) $(CCFLAGS) tracereader.c
-
-#log.o : log.c log.h
-#	$(CC) $(CCFLAGS) log.c
-
-#tlb.o : tlb.c tlb.h
-#	$(CC) $(CCFLAGS) tlb.c
+queue.o : queue.c queue.h
+	$(CC) $(CCFLAGS) queue.c
 
 # Once things work, people frequently delete their object files.
 # If you use "make clean", this will do it for you.
