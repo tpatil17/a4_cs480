@@ -107,7 +107,7 @@ void *producer_general(void *args){
         //acquire lock
         pthread_mutex_lock(&sync_monitor->lock);
         //First check if the number requests are less than the maximum allowed requests
-        if(sync_monitor->request_count == sync_monitor->max_requests-1){
+        if(sync_monitor->request_count == sync_monitor->max_requests){
             //unlock
             pthread_mutex_unlock(&sync_monitor->lock);
             // if the requests produced has reached its limit, signal the main thread
@@ -115,10 +115,13 @@ void *producer_general(void *args){
             return NULL;
         }
         else{
+            //release the lock before simulating production
+            pthread_mutex_unlock(&sync_monitor->lock);
             //produce a request, simulate by sleeping
             sleep(sync_monitor->general_sleep); // general request simulation
             sync_monitor->request_count +=1; // increase the number of requests count by 1
-
+            // once production is doen acquire lock
+            pthread_mutex_lock(&sync_monitor->lock);
             // check if the queue is full
             if(sync_monitor->queue_size == MAX_QUEUE_SIZE){
 
@@ -185,6 +188,8 @@ void *consumer_t_x(void *args){
         // since we are processing the current request type
         // decrease its counter from shared variable
         sync_monitor->requests_count_arr[req_typ]-=1;
+        // increase the consumed count
+        sync_monitor->consumed_count_arr[T_X][req_typ]+=1;
         // use the log library to log the output
         output_request_removed(type, req, 
         sync_monitor->consumed_count_arr[T_X], sync_monitor->requests_count_arr 
