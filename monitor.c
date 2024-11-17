@@ -44,7 +44,7 @@ monitor* init_monitor(int total_request){
     monitor_t->requests_count_arr[GEN_REQ] = 0; // general requests count 0
     monitor_t->requests_count_arr[VIP_REQ] = 0; // vip requests count 0
     // initialize the consumed type array 
-    monitor_t->consumed_count_arr = (unsigned int**)malloc(sizeof(unsigned int)*ROWS);
+    monitor_t->consumed_count_arr = (unsigned int**)malloc(sizeof(unsigned int*)*ROWS);
     //allocate memory for each consumer, t_x first
     monitor_t->consumed_count_arr[T_X] = (unsigned int *)malloc(sizeof(unsigned int)* ROWS);
     //allocate memory for each consumer, rev_9
@@ -62,6 +62,11 @@ monitor* init_monitor(int total_request){
     pthread_cond_init(&monitor_t->empty, NULL);
     //allocate memory for the bounded buffer
     monitor_t->wait_queue = create_queue();
+    // Allocate memory for the semaphore pointers
+    monitor_t->barrier_gen = (sem_t *)malloc(sizeof(sem_t));
+    monitor_t->barrier_vip = (sem_t *)malloc(sizeof(sem_t));
+    monitor_t->barrier_t_x = (sem_t *)malloc(sizeof(sem_t));
+    monitor_t->barrier_rev_9 = (sem_t *)malloc(sizeof(sem_t));
     // initialize barrier semaphores
     sem_init(monitor_t->barrier_gen,0, 1);// barrier sem for general bot
     // for vip bot
