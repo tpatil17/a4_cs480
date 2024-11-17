@@ -19,14 +19,16 @@ typedef struct monitor {
     pthread_cond_t empty; // condition variable to signal buffer is empty
     queue_t* wait_queue; // bounded buffer
     pthread_mutex_t lock; // mutext lock to synchronize buffer access
-    sem_t barrier_gen; // barrier semaphore for general greater
-    sem_t barrier_vip; // barrier semaphore for general greater
-    sem_t barrier_t_x; // barrier semaphore for general greater
-    sem_t barrier_rev_9; // barrier semaphore for general greater
+    sem_t* barrier_gen; // barrier semaphore for general greater
+    sem_t* barrier_vip; // barrier semaphore for general greater
+    sem_t* barrier_t_x; // barrier semaphore for general greater
+    sem_t* barrier_rev_9; // barrier semaphore for general greater
     int general_sleep; //sleep time for general request
     int vip_sleep; // sleep time for vip request
     int t_x_sleep; // sleep time for t-x bot
     int rev_9_sleep; // sleep time for rev_9 
+    int queue_empty_flag; // flag to know if queue is empty or not
+    int queue_full_flag; // flag to know if queue is full or not
     
 
 }monitor;
