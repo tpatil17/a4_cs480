@@ -14,6 +14,7 @@ typedef struct monitor {
     int request_count; // number of requestes produced
     int queue_size; // number of guests in the queue, max allowed is 18
     unsigned int *requests_count_arr; //  array of the count of request types in the queue
+    unsigned int *total_requests_prod; // the total requests of each type produced till now
     unsigned int **consumed_count_arr; // array of count of each type of request consumed (2d array indicating consumption for each consumer)
     pthread_cond_t full; // condition variable to signla buffer is full
     pthread_cond_t empty; // condition variable to signal buffer is empty
