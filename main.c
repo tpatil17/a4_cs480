@@ -78,7 +78,7 @@ int main(int argc, char* argv[]){
     sem_wait(syn_monitor->barrier_t_x);
 
     //print the consumption history report
-    output_production_history(syn_monitor->requests_count_arr, syn_monitor->consumed_count_arr);
+    output_production_history(syn_monitor->total_requests_prod, syn_monitor->consumed_count_arr);
 
 
 
