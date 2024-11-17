@@ -66,16 +66,25 @@ int main(int argc, char* argv[]){
     // create the generla producer thread and initialise it
     // call the producer function to simulate
     pthread_create(&general_greeter, NULL, producer_general, syn_monitor);
+    // create a producer thread for VIP rooms
+    pthread_t vip_greeter;
+    // thread should call the producer vip function
+    pthread_create(&vip_greeter, NULL,producer_vip, syn_monitor);
     // create a consumre thread
     pthread_t t_x; // T-x bot 
     // create a consumer t-x thread to consume requestsd
     // call the  consumer_t_x function 
     pthread_create(&t_x, NULL, consumer_t_x, syn_monitor);
+    // create a new thread for rev-9
+    pthread_t rev_9;
+    pthread_create(&rev_9, NULL, consumer_rev_9, syn_monitor);
 
     // wait signal barrier for general producer and wait on it
     sem_wait(syn_monitor->barrier_gen);
+    sem_wait(syn_monitor->barrier_vip);
     // wait on the consumer t-x to fininsh
     sem_wait(syn_monitor->barrier_t_x);
+    sem_wait(syn_monitor->barrier_rev_9);
 
     //print the consumption history report
     output_production_history(syn_monitor->total_requests_prod, syn_monitor->consumed_count_arr);

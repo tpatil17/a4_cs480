@@ -46,10 +46,19 @@ monitor* init_monitor(int total_request);
  * waits for space to open up in the queue, and the adds the process to the queue
  * If the maximum number of production is met, the thread signals barrier semaphore
  * 
- * @param monitor : monitor struct to access wait queue and other sync tools
+ * @param args : monitor struct to access wait queue and other sync tools
  */
 void *producer_general(void* args);
 
+/**
+ * @brief Producer function for the vip greater, the function will simulate 
+ * VIP requests. Will be called by the vip greeter. args will be a pointer to monitor
+ * struct. The function will create a VIP request and add to the queue.
+ * 
+ * @param args monitor struct
+ * @return void* NULL
+ */
+void *producer_vip(void* args);
 /**
  * @brief This function simulates the consumption/processing a request for table
  * the function uses monitor to access the wait queue, and the condition variables in
@@ -58,8 +67,18 @@ void *producer_general(void* args);
  * waits for a new request. Once the queue is empty and the max requests are met,
  * the consumer thread signals main thread it has completed execution using the barrier_t_x
  * semaphore.
- * @param monitor : the monitor structure  used to synchronise threads
+ * @param args : the monitor structure  used to synchronise threads
  */
 void *consumer_t_x(void* args);
+
+/**
+ * @brief function for the consumer rev_9. This function will be called by the rev_9 thread
+ * to simulate catering to a request by rev_9. The argument is a pointer to the monitor data structure
+ * using monitor the consumer will synchronize with other thread to consume requests from the buffer
+ * 
+ * @param args  : monitor struct
+ * @return void* 
+ */
+void *consumer_rev_9(void* args);
 
 #endif

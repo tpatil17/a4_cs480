@@ -104,6 +104,8 @@ void *producer_general(void *args){
     RequestType type = GEN_REQ;
     // continue executing until production limit is met
     while(true){
+        //produce a request, simulate by sleeping
+        sleep(sync_monitor->general_sleep); // general request simulation
         //acquire lock
         pthread_mutex_lock(&sync_monitor->lock);
         //First check if the number requests are less than the maximum allowed requests
@@ -115,13 +117,9 @@ void *producer_general(void *args){
             return NULL;
         }
         else{
-            //release the lock before simulating production
-            pthread_mutex_unlock(&sync_monitor->lock);
-            //produce a request, simulate by sleeping
-            sleep(sync_monitor->general_sleep); // general request simulation
+
             sync_monitor->request_count +=1; // increase the number of requests count by 1
-            // once production is doen acquire lock
-            pthread_mutex_lock(&sync_monitor->lock);
+
             // check if the queue is full
             if(sync_monitor->queue_size == MAX_QUEUE_SIZE){
 
@@ -136,6 +134,60 @@ void *producer_general(void *args){
             sync_monitor->requests_count_arr[GEN_REQ] += 1;
             //update total produced
             sync_monitor->total_requests_prod[GEN_REQ] +=1;
+            //increment the queue counter by 1
+            sync_monitor->queue_size+=1;
+            // use the log function to write to stdout
+            output_request_added(type, sync_monitor->total_requests_prod, sync_monitor->requests_count_arr);
+
+            if(sync_monitor->queue_empty_flag == EMPTY){ // if we just added an elemnt to empty queue
+                // signal the queue is not empty, we added an element
+                sync_monitor->queue_empty_flag = NOT_EMPTY;
+                pthread_cond_signal(&sync_monitor->empty);
+            }
+
+            // leave the lock
+            pthread_mutex_unlock(&sync_monitor->lock);
+
+        }
+    }
+}
+
+void* producer_vip(void * args){
+        // type cast the monitor
+    monitor* sync_monitor = (monitor*)args;
+    //Assign request type
+    RequestType type = VIP_REQ;
+    // continue executing until production limit is met
+    while(true){
+        //produce a request, simulate by sleeping
+        sleep(sync_monitor->vip_sleep); // VIP request simulation
+        //acquire lock
+        pthread_mutex_lock(&sync_monitor->lock);
+        //First check if the number requests are less than the maximum allowed requests
+        if(sync_monitor->request_count == sync_monitor->max_requests){
+            //unlock
+            pthread_mutex_unlock(&sync_monitor->lock);
+            // if the requests produced has reached its limit, signal the main thread
+            sem_post(sync_monitor->barrier_vip);
+            return NULL;
+        }
+        else{
+            // add the vip request
+            sync_monitor->request_count +=1; // increase the number of requests count by 1
+            // check if the queue is full
+            if(sync_monitor->queue_size == MAX_QUEUE_SIZE){
+
+                sync_monitor->queue_full_flag = FULL;// queue is full
+                // wait if the queue is full, once a spot opens go ahead
+                pthread_cond_wait(&sync_monitor->full, &sync_monitor->lock);
+                
+            }
+            // add the request to the queue
+            push_to_queue(sync_monitor->wait_queue, VIP_REQ);
+            // update the requests count in the queue
+            sync_monitor->requests_count_arr[VIP_REQ] += 1;
+            //update total produced
+            sync_monitor->total_requests_prod[VIP_REQ] +=1;
             //increment the queue counter by 1
             sync_monitor->queue_size+=1;
             // use the log function to write to stdout
@@ -210,4 +262,60 @@ void *consumer_t_x(void *args){
 
     }
 
+}
+
+void* consumer_rev_9(void* args){
+    // type cast args
+    monitor* sync_monitor = (monitor*)args;
+    // create a consumer type variable
+    ConsumerType type = REV_9; // assign type
+    // continue until no requests remain to be processed
+    while(true){
+        // acquire lock
+        pthread_mutex_lock(&sync_monitor->lock);
+        // check if the queue is empty
+        if(sync_monitor->queue_size == 0){
+            // check if production is complete
+            if(sync_monitor->request_count == sync_monitor->max_requests){
+                // the threads work is done so produce the output history message
+
+                // if all the requests have been processed, signal the main
+                //release the lock
+                pthread_mutex_unlock(&sync_monitor->lock);
+                sem_post(sync_monitor->barrier_rev_9); // signal barrier sem
+                return NULL;
+            }
+            // flag the queue is empty
+            sync_monitor->queue_empty_flag = EMPTY;
+            // wait till someone signals that the queue is not empty
+            pthread_cond_wait(&sync_monitor->empty, &sync_monitor->lock);
+        }
+        int req_typ = pop_queue(sync_monitor->wait_queue);// once lock is acquired above, fetch the request
+        // request type
+        RequestType req = req_typ;
+        // decrease the queue size by 1
+        sync_monitor->queue_size-=1;
+        // since we are processing the current request type
+        // decrease its counter from shared variable
+        sync_monitor->requests_count_arr[req_typ]-=1;
+        // increase the consumed count
+        sync_monitor->consumed_count_arr[REV_9][req_typ]+=1;
+        // use the log library to log the output
+        output_request_removed(type, req, 
+        sync_monitor->consumed_count_arr[REV_9], sync_monitor->requests_count_arr 
+        );
+        //signal queue is not full
+        if(sync_monitor->queue_full_flag == FULL){
+            // set flag to not full as we just cleared an element
+            sync_monitor->queue_full_flag = NOT_FULL;
+            //signal the queue is not full anymore
+            pthread_cond_signal(&sync_monitor->full);
+        }
+        // release the lock
+        pthread_mutex_unlock(&sync_monitor->lock);
+        // check what kind of request
+        // simulate
+        sleep(sync_monitor->rev_9_sleep);
+
+    }          
 }
