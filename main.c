@@ -72,9 +72,9 @@ int main(int argc, char* argv[]){
     pthread_create(&t_x, NULL, consumer_t_x, syn_monitor);
 
     // wait signal barrier for general producer and wait on it
-    sem_wait(&syn_monitor->barrier_gen);
+    sem_wait(syn_monitor->barrier_gen);
     // wait on the consumer t-x to fininsh
-    sem_wait(&syn_monitor->barrier_t_x);
+    sem_wait(syn_monitor->barrier_t_x);
 
     //print the consumption history report
     output_production_history(syn_monitor->requests_count_arr, syn_monitor->consumed_count_arr);
