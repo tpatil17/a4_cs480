@@ -68,13 +68,13 @@ monitor* init_monitor(int total_request){
     monitor_t->barrier_t_x = (sem_t *)malloc(sizeof(sem_t));
     monitor_t->barrier_rev_9 = (sem_t *)malloc(sizeof(sem_t));
     // initialize barrier semaphores
-    sem_init(monitor_t->barrier_gen,0, 1);// barrier sem for general bot
+    sem_init(monitor_t->barrier_gen,0, 0);// barrier sem for general bot
     // for vip bot
-    sem_init(monitor_t->barrier_vip, 0, 1);
+    sem_init(monitor_t->barrier_vip, 0, 0);
     // initialize barrier semaphore for t-x bot
-    sem_init(monitor_t->barrier_t_x,0, 1);
+    sem_init(monitor_t->barrier_t_x,0, 0);
     // for rev_9
-    sem_init(monitor_t->barrier_rev_9, 0, 1);
+    sem_init(monitor_t->barrier_rev_9, 0, 0);
     // default sleep time for general order
     monitor_t->general_sleep = 0; // default is 0
     // for t-x
