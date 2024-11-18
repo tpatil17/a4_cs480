@@ -209,7 +209,7 @@ void* producer_vip(void * args){
             sync_monitor->total_requests_prod[VIP_REQ] +=1;
             //increment the queue counter by 1
             // old size
-            int old_size = 0;
+            int old_size = sync_monitor->queue_size;
             sync_monitor->queue_size+=1;
             // use the log function to write to stdout
             output_request_added(type, sync_monitor->total_requests_prod, sync_monitor->requests_count_arr);
