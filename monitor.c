@@ -120,7 +120,7 @@ void *producer_general(void *args){
         //fflush(stdout);
         //printf("lock acquired\n");
         //First check if the number requests are less than the maximum allowed requests
-        if(sync_monitor->request_count == sync_monitor->max_requests){
+        if(sync_monitor->request_count == sync_monitor->max_requests-1){
             //unlock
     //        printf("general is leaving\n");
             pthread_mutex_unlock(&sync_monitor->lock);
@@ -204,7 +204,7 @@ void* producer_vip(void * args){
         //fflush(stdout);
         //First check if the number requests are less than the maximum allowed requests
         //printf("lock with vip\n");
-        if(sync_monitor->request_count == sync_monitor->max_requests){
+        if(sync_monitor->request_count == sync_monitor->max_requests-1){
             //unlock
         //    printf("VIP leaving\n");
         //    printf("max requests have been met, VIP leaving\n");
@@ -293,7 +293,7 @@ void *consumer_t_x(void *args){
           //  printf("The queue is empty, check if more requests are expected\n");
             //fflush(stdout);        
             // check if production is complete
-            if(sync_monitor->request_count == sync_monitor->max_requests){
+            if(sync_monitor->request_count == sync_monitor->max_requests-1){
                 // the threads work is done so produce the output history message
                 //printf("NO more requests expected\n");
               //  fflush(stdout);
@@ -307,8 +307,8 @@ void *consumer_t_x(void *args){
                 sem_post(sync_monitor->barrier_t_x); // signal barrier sem
                 return NULL;
             }
-    ///        printf("T_X waiting for queue to populate\n");
-    //        fflush(stdout);
+            printf("T_X waiting for queue to populate\n");
+            fflush(stdout);
             // wait till queue has an element
             pthread_cond_wait(&sync_monitor->empty, &sync_monitor->lock);
         }
@@ -375,7 +375,7 @@ void* consumer_rev_9(void* args){
     //        printf("Rev_9 says queue is empty, check if production is met\n");
     //        fflush(stdout);        
             // check if production is complete
-            if(sync_monitor->request_count == sync_monitor->max_requests){
+            if(sync_monitor->request_count == sync_monitor->max_requests-1){
     //            printf("Rev_9 says production is met, rev_9 is leaving\n");
     //            fflush(stdout);
                 // the threads work is done so produce the output history message
