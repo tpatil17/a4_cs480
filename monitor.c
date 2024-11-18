@@ -116,7 +116,8 @@ void *producer_general(void *args){
             printf("general is leaving\n");
             pthread_mutex_unlock(&sync_monitor->lock);
             // if the requests produced has reached its limit, signal the main thread
-
+            // signal empty
+            pthread_cond_signal(&sync_monitor->empty);
             sem_post(sync_monitor->barrier_gen);
             return NULL;
         }
@@ -173,6 +174,8 @@ void* producer_vip(void * args){
             //unlock
             printf("VIP leaving\n");
             pthread_mutex_unlock(&sync_monitor->lock);
+            // signal empty
+            pthread_cond_signal(&sync_monitor->empty);
             // if the requests produced has reached its limit, signal the main thread
             sem_post(sync_monitor->barrier_vip);
             return NULL;
@@ -236,6 +239,7 @@ void *consumer_t_x(void *args){
             // flag the queue is empty
             sync_monitor->queue_empty_flag = EMPTY;
             // wait till someone signals that the queue is not empty
+            printf("t-x is waiting\n");
             pthread_cond_wait(&sync_monitor->empty, &sync_monitor->lock);
         }
         int req_typ = pop_queue(sync_monitor->wait_queue);// once lock is acquired above, fetch the request
@@ -294,6 +298,7 @@ void* consumer_rev_9(void* args){
             // flag the queue is empty
             sync_monitor->queue_empty_flag = EMPTY;
             // wait till someone signals that the queue is not empty
+            printf("rev_9 is waiting\n");
             pthread_cond_wait(&sync_monitor->empty, &sync_monitor->lock);
         }
         int req_typ = pop_queue(sync_monitor->wait_queue);// once lock is acquired above, fetch the request
