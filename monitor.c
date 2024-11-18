@@ -107,13 +107,13 @@ void *producer_general(void *args){
         //produce a request, simulate by sleeping
         sleep(sync_monitor->general_sleep); // general request simulation
         //acquire lock
-        printf("production complete\n");
+        //printf("production complete\n");
         pthread_mutex_lock(&sync_monitor->lock);
-        printf("lock acquired\n");
+        //printf("lock acquired\n");
         //First check if the number requests are less than the maximum allowed requests
         if(sync_monitor->request_count == sync_monitor->max_requests){
             //unlock
-            printf("general is leaving\n");
+            //printf("general is leaving\n");
             pthread_mutex_unlock(&sync_monitor->lock);
             // if the requests produced has reached its limit, signal the main thread
             // wake up all threads
@@ -169,10 +169,10 @@ void* producer_vip(void * args){
         //acquire lock
         pthread_mutex_lock(&sync_monitor->lock);
         //First check if the number requests are less than the maximum allowed requests
-        printf("lock with vip\n");
+        //printf("lock with vip\n");
         if(sync_monitor->request_count == sync_monitor->max_requests){
             //unlock
-            printf("VIP leaving\n");
+            //printf("VIP leaving\n");
             pthread_mutex_unlock(&sync_monitor->lock);
             // wake up all threads who are waiting
             pthread_cond_broadcast(&sync_monitor->empty);
@@ -239,7 +239,7 @@ void *consumer_t_x(void *args){
             // flag the queue is empty
             sync_monitor->queue_empty_flag = EMPTY;
             // wait till someone signals that the queue is not empty
-            printf("t-x is waiting\n");
+            //printf("t-x is waiting\n");
             pthread_cond_wait(&sync_monitor->empty, &sync_monitor->lock);
         }
         int req_typ = pop_queue(sync_monitor->wait_queue);// once lock is acquired above, fetch the request
@@ -298,7 +298,7 @@ void* consumer_rev_9(void* args){
             // flag the queue is empty
             sync_monitor->queue_empty_flag = EMPTY;
             // wait till someone signals that the queue is not empty
-            printf("rev_9 is waiting\n");
+            //printf("rev_9 is waiting\n");
             pthread_cond_wait(&sync_monitor->empty, &sync_monitor->lock);
         }
         int req_typ = pop_queue(sync_monitor->wait_queue);// once lock is acquired above, fetch the request
