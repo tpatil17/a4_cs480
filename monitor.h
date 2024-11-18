@@ -18,6 +18,7 @@ typedef struct monitor {
     unsigned int **consumed_count_arr; // array of count of each type of request consumed (2d array indicating consumption for each consumer)
     pthread_cond_t full; // condition variable to signla buffer is full
     pthread_cond_t empty; // condition variable to signal buffer is empty
+    pthread_cond_t vip_buf; // conditon variable to signal vip buffer is awailable
     queue_t* wait_queue; // bounded buffer
     pthread_mutex_t lock; // mutext lock to synchronize buffer access
     sem_t* barrier_gen; // barrier semaphore for general greater

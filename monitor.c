@@ -20,6 +20,7 @@
 #define NOT_EMPTY 0
 #define EMPTY 1
 #define ROWS 2
+#define MAX_VIPS 5
 
 
 monitor* init_monitor(int total_request){
@@ -60,6 +61,7 @@ monitor* init_monitor(int total_request){
     // allocate memory for the condition variables
     pthread_cond_init(&monitor_t->full, NULL);
     pthread_cond_init(&monitor_t->empty, NULL);
+    pthread_cond_init(&monitor_t->vip_buf, NULL);
     //allocate memory for the bounded buffer
     monitor_t->wait_queue = create_queue();
     // Allocate memory for the semaphore pointers
@@ -191,6 +193,11 @@ void* producer_vip(void * args){
                 pthread_cond_wait(&sync_monitor->full, &sync_monitor->lock);
                 
             }
+            // check if the queue ahs maximum allowed vips
+            while(sync_monitor->requests_count_arr[VIP_REQ] == MAX_VIPS){
+                //wait unitl signal
+                pthread_cond_wait(&sync_monitor->vip_buf,&sync_monitor->lock);
+            }
             // add the request to the queue
             push_to_queue(sync_monitor->wait_queue, VIP_REQ);
             // update the requests count in the queue
@@ -263,6 +270,10 @@ void *consumer_t_x(void *args){
             //signal the queue is not full anymore
             pthread_cond_broadcast(&sync_monitor->full);
         }
+        // if the handled reques was vip
+        if(req_typ == VIP_REQ){
+            pthread_cond_signal(&sync_monitor->vip_buf);
+        }
      
         // release the lock
         pthread_mutex_unlock(&sync_monitor->lock);
@@ -321,6 +332,10 @@ void* consumer_rev_9(void* args){
             sync_monitor->queue_full_flag = NOT_FULL;
             //signal the queue is not full anymore
             pthread_cond_broadcast(&sync_monitor->full);
+        }
+        // if the request handeled was vip signal vip
+        if(req_typ == VIP_REQ){
+            pthread_cond_signal(&sync_monitor->vip_buf);
         }
         // release the lock
         pthread_mutex_unlock(&sync_monitor->lock);
