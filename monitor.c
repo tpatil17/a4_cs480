@@ -288,8 +288,10 @@ void *consumer_t_x(void *args){
         //    printf("vip good to add\n");
             pthread_cond_signal(&sync_monitor->vip_buf);
         }
-
-        pthread_cond_signal(&sync_monitor->full);
+        if(old_size == MAX_QUEUE_SIZE){
+            pthread_cond_signal(&sync_monitor->full);
+        }
+        
         // release the lock
         pthread_mutex_unlock(&sync_monitor->lock);
         // check what kind of request
@@ -358,7 +360,10 @@ void* consumer_rev_9(void* args){
         //    printf("vip good to be added\n");
             pthread_cond_signal(&sync_monitor->vip_buf);
         }
-        pthread_cond_signal(&sync_monitor->full);
+        if(old == MAX_QUEUE_SIZE){
+            pthread_cond_signal(&sync_monitor->full);
+        }
+        
         // release the lock
         pthread_mutex_unlock(&sync_monitor->lock);
         // check what kind of request
