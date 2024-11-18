@@ -150,7 +150,7 @@ void *producer_general(void *args){
             if(sync_monitor->queue_empty_flag == EMPTY){ // if we just added an elemnt to empty queue
                 // signal the queue is not empty, we added an element
                 sync_monitor->queue_empty_flag = NOT_EMPTY;
-                pthread_cond_signal(&sync_monitor->empty);
+                pthread_cond_broadcast(&sync_monitor->empty);
             }
 
             // leave the lock
@@ -213,7 +213,7 @@ void* producer_vip(void * args){
             if(sync_monitor->queue_empty_flag == EMPTY){ // if we just added an elemnt to empty queue
                 // signal the queue is not empty, we added an element
                 sync_monitor->queue_empty_flag = NOT_EMPTY;
-                pthread_cond_signal(&sync_monitor->empty);
+                pthread_cond_broadcast(&sync_monitor->empty);
             }
 
             // leave the lock
