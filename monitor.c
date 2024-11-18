@@ -142,7 +142,7 @@ void *producer_general(void *args){
             // check if the queue is full
             while(sync_monitor->queue_size == MAX_QUEUE_SIZE){
 
-                sync_monitor->queue_full_flag = FULL;// queue is full
+          //      sync_monitor->queue_full_flag = FULL;// queue is full
                 // wait if the queue is full, once a spot opens acquire the lock
     //            printf("general is waiting for queue space\n");
                 //printf("Queue is full, general is waiting\n");
