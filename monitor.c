@@ -152,7 +152,7 @@ void *producer_general(void *args){
             if(old_size == 0){ // if we just added an elemnt to empty queue
                 // signal the queue is not empty, we added an element
                 sync_monitor->queue_empty_flag = NOT_EMPTY;
-                pthread_cond_broadcast(&sync_monitor->empty);
+                pthread_cond_signal(&sync_monitor->empty);
             }
 
             // leave the lock
@@ -217,7 +217,7 @@ void* producer_vip(void * args){
             if(old_size == 0){ // if we just added an elemnt to empty queue
                 // signal the queue is not empty, we added an element
                 sync_monitor->queue_empty_flag = NOT_EMPTY;
-                pthread_cond_broadcast(&sync_monitor->empty);
+                pthread_cond_signal(&sync_monitor->empty);
             }
 
             // leave the lock
@@ -251,7 +251,7 @@ void *consumer_t_x(void *args){
             // flag the queue is empty
             sync_monitor->queue_empty_flag = EMPTY;
             // wait till someone signals that the queue is not empty
-            //printf("t-x is waiting\n");
+            printf("t-x is waiting\n");
             pthread_cond_wait(&sync_monitor->empty, &sync_monitor->lock);
         }
         int req_typ = pop_queue(sync_monitor->wait_queue);// once lock is acquired above, fetch the request
@@ -318,7 +318,7 @@ void* consumer_rev_9(void* args){
             // flag the queue is empty
             sync_monitor->queue_empty_flag = EMPTY;
             // wait till someone signals that the queue is not empty
-            //printf("rev_9 is waiting\n");
+            printf("rev_9 is waiting\n");
             pthread_cond_wait(&sync_monitor->empty, &sync_monitor->lock);
         }
         int req_typ = pop_queue(sync_monitor->wait_queue);// once lock is acquired above, fetch the request
