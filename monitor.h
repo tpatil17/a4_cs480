@@ -8,6 +8,7 @@
 #include<unistd.h>
 #include<semaphore.h>
 #include "queue.h"
+#define DENOM 1000
 
 typedef struct monitor {
     int max_requests; // the maximum allowed requests to produce

@@ -21,6 +21,7 @@
 #define EMPTY 1
 #define ROWS 2
 #define MAX_VIPS 5
+#define DENOM 1000
 
 
 monitor* init_monitor(int total_request){
@@ -108,7 +109,7 @@ void *producer_general(void *args){
     while(true){
         //produce a request, simulate by sleeping
         sleep(sync_monitor->general_sleep/DENOM); // general request simulation
-        printf("production complete in: %f sec\n", sync_monitor->general_sleep);
+        printf("production complete in: %d milisec\n", sync_monitor->general_sleep);
         fflush(stdout);
         //acquire lock
         //printf("production complete\n");
@@ -157,7 +158,7 @@ void *producer_general(void *args){
             sync_monitor->total_requests_prod[GEN_REQ] +=1;
             //increment the queue counter by 1
             //old queue size
-            int old_size = sync_monitor->queue_size;
+            //int old_size = sync_monitor->queue_size;
             sync_monitor->queue_size+=1;
             sync_monitor->request_count +=1; // increase the number of requests count by 1
 
@@ -343,7 +344,7 @@ void *consumer_t_x(void *args){
         pthread_mutex_unlock(&sync_monitor->lock);
         // check what kind of request
         // simulate
-        printf("T_X sleeping for : %f\n", sync_monitor->t_x_sleep);
+        printf("T_X sleeping for : %d\n", sync_monitor->t_x_sleep);
         fflush(stdout);
         sleep(sync_monitor->t_x_sleep/DENOM);
         printf("T_X woken up");
