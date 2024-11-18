@@ -43,14 +43,6 @@ int main(int argc, char* argv[]){
                 break;
         }
     }
-    // Debug statements for the get opt functionality
-
-    
-    printf("The total number of requests to be entertained: %d\n", max_requests);
-    printf("The time taken by t-x robot to resplve a request: %d\n", t_x_time);
-    printf("The time taken by rev-9 robot to resolve a request: %d\n", rev_9_time);
-    printf("The time taken by general robot tot create a request: %d\n", gen_time);
-    printf("The time taken by vip robot tot create a request: %d\n", vip_time);
 
     // create a monitor sturct to use 
     monitor* syn_monitor = init_monitor(max_requests);
