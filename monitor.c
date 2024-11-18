@@ -110,7 +110,7 @@ void *producer_general(void *args){
         //produce a request, simulate by sleeping
         printf("General about to sleep for %d\n", sync_monitor->general_sleep);
         fflush(stdout);
-        usleep(sync_monitor->general_sleep/DENOM); // general request simulation
+        sleep(sync_monitor->general_sleep/DENOM); // general request simulation
         printf("production complete in: %d milisec\n", sync_monitor->general_sleep);
         fflush(stdout);
         //acquire lock
@@ -195,7 +195,7 @@ void* producer_vip(void * args){
         printf("vip about to sleep for : %d\n", sync_monitor->vip_sleep);
         fflush(stdout);
         //produce a request, simulate by sleeping
-        usleep(sync_monitor->vip_sleep/DENOM); // VIP request simulation
+        sleep(sync_monitor->vip_sleep/DENOM); // VIP request simulation
         printf("VIP completed its sleep\n");
         fflush(stdout);
         //acquire lock
@@ -235,15 +235,15 @@ void* producer_vip(void * args){
                 
             }
 
-            printf("check the number of VIPs in the buffer: %d\n", sync_monitor->requests_count_arr[VIP_REQ]);
-            fflush(stdout);            
-            // check if the queue ahs maximum allowed vips
-            while(sync_monitor->requests_count_arr[VIP_REQ] == MAX_VIPS){
-                //wait unitl signal
-                printf("VIP must wait, too many vips in queue\n");
-                fflush(stdout);
-                pthread_cond_wait(&sync_monitor->vip_buf,&sync_monitor->lock);
-            }
+            // printf("check the number of VIPs in the buffer: %d\n", sync_monitor->requests_count_arr[VIP_REQ]);
+            // fflush(stdout);            
+            // // check if the queue ahs maximum allowed vips
+            // while(sync_monitor->requests_count_arr[VIP_REQ] == MAX_VIPS){
+            //     //wait unitl signal
+            //     printf("VIP must wait, too many vips in queue\n");
+            //     fflush(stdout);
+            //     pthread_cond_wait(&sync_monitor->vip_buf,&sync_monitor->lock);
+            // }
             printf("verifying queue size: %d and num vips: %d\n", sync_monitor->queue_size, sync_monitor->requests_count_arr[VIP_REQ]);
             fflush(stdout);
  
@@ -330,12 +330,12 @@ void *consumer_t_x(void *args){
         sync_monitor->consumed_count_arr[T_X], sync_monitor->requests_count_arr 
         );
         // if the handled reques was vip and the buffer has a space open for vip
-        if(req_typ == VIP_REQ && vip_ctr == MAX_VIPS){
-            printf("VIP request was consumed by T_X, signal free vip space\n");
-            fflush(stdout);
+        // if(req_typ == VIP_REQ && vip_ctr == MAX_VIPS){
+        //     printf("VIP request was consumed by T_X, signal free vip space\n");
+        //     fflush(stdout);
 
-            pthread_cond_signal(&sync_monitor->vip_buf);
-        }
+        //     pthread_cond_signal(&sync_monitor->vip_buf);
+        // }
 
         if(sync_monitor->queue_size == MAX_QUEUE_SIZE -1){
             printf("T_X is signaling the queue is not full\n");
@@ -350,7 +350,7 @@ void *consumer_t_x(void *args){
         // simulate
         printf("T_X sleeping for : %d\n", sync_monitor->t_x_sleep);
         fflush(stdout);
-        usleep(sync_monitor->t_x_sleep/DENOM);
+        sleep(sync_monitor->t_x_sleep/DENOM);
         printf("T_X woken up");
         fflush(stdout);
 
@@ -414,12 +414,12 @@ void* consumer_rev_9(void* args){
         sync_monitor->consumed_count_arr[REV_9], sync_monitor->requests_count_arr 
         );
         // if the popped value was vip and we have empty vip
-        if(req_typ == VIP_REQ && vips == MAX_VIPS){
-            printf("VIP request was consumed by rev_9, signal free vip space\n");
-            fflush(stdout);
+        // if(req_typ == VIP_REQ && vips == MAX_VIPS){
+        //     printf("VIP request was consumed by rev_9, signal free vip space\n");
+        //     fflush(stdout);
 
-            pthread_cond_signal(&sync_monitor->vip_buf);
-        }
+        //     pthread_cond_signal(&sync_monitor->vip_buf);
+        // }
         if(sync_monitor->queue_size == MAX_QUEUE_SIZE-1){
             printf("request was consumed by rev_9, signal queue is free\n");
             fflush(stdout);
@@ -434,7 +434,7 @@ void* consumer_rev_9(void* args){
         // check what kind of request
         // simulate
         printf("rev_9 is sleeping\n");
-        usleep(sync_monitor->rev_9_sleep/DENOM);
+        sleep(sync_monitor->rev_9_sleep/DENOM);
         printf("rev_9 is awake and ready\n");
 
     }          
