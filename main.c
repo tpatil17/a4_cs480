@@ -87,10 +87,10 @@ int main(int argc, char* argv[]){
     sem_wait(syn_monitor->barrier_rev_9);
 
     // join all threads
-    pthread_join(&general_greeter, NULL);
-    pthread_join(&vip_greeter, NULL);
-    pthread_join(&t_x, NULL);
-    pthread_join(&rev_9, NULL);
+    pthread_join(general_greeter, NULL);
+    pthread_join(vip_greeter, NULL);
+    pthread_join(t_x, NULL);
+    pthread_join(rev_9, NULL);
 
     //print the consumption history report
     output_production_history(syn_monitor->total_requests_prod, syn_monitor->consumed_count_arr);

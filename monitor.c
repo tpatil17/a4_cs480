@@ -107,7 +107,7 @@ void *producer_general(void *args){
         //produce a request, simulate by sleeping
         sleep(sync_monitor->general_sleep); // general request simulation
         //acquire lock
-        prinf("production complete\n");
+        printf("production complete\n");
         pthread_mutex_lock(&sync_monitor->lock);
         printf("lock acquired\n");
         //First check if the number requests are less than the maximum allowed requests
