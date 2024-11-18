@@ -331,12 +331,12 @@ void *consumer_t_x(void *args){
         sync_monitor->consumed_count_arr[T_X], sync_monitor->requests_count_arr 
         );
         // if the handled reques was vip and the buffer has a space open for vip
-        // if(req_typ == VIP_REQ && vip_ctr == MAX_VIPS){
+        if(req_typ == VIP_REQ && vip_ctr == MAX_VIPS){
         //     printf("VIP request was consumed by T_X, signal free vip space\n");
         //     fflush(stdout);
 
-        //     pthread_cond_signal(&sync_monitor->vip_buf);
-        // }
+             pthread_cond_signal(&sync_monitor->full);
+        }
 
         if(sync_monitor->queue_size == MAX_QUEUE_SIZE -1){
     //        printf("T_X is signaling the queue is not full\n");
@@ -416,12 +416,12 @@ void* consumer_rev_9(void* args){
         sync_monitor->consumed_count_arr[REV_9], sync_monitor->requests_count_arr 
         );
         // if the popped value was vip and we have empty vip
-        // if(req_typ == VIP_REQ && vips == MAX_VIPS){
+        if(req_typ == VIP_REQ && vips == MAX_VIPS){
         //     printf("VIP request was consumed by rev_9, signal free vip space\n");
         //     fflush(stdout);
 
-        //     pthread_cond_signal(&sync_monitor->vip_buf);
-        // }
+             pthread_cond_signal(&sync_monitor->full);
+        }
         if(sync_monitor->queue_size == MAX_QUEUE_SIZE-1){
     //        printf("request was consumed by rev_9, signal queue is free\n");
     //        fflush(stdout);
