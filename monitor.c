@@ -150,11 +150,11 @@ void *producer_general(void *args){
             // use the log function to write to stdout
             output_request_added(type, sync_monitor->total_requests_prod, sync_monitor->requests_count_arr);
 
-            if(old_size == 0){ // if we just added an elemnt to empty queue
+            //if(old_size == 0){ // if we just added an elemnt to empty queue
                 // signal the queue is not empty, we added an element
                 sync_monitor->queue_empty_flag = NOT_EMPTY;
                 pthread_cond_signal(&sync_monitor->empty);
-            }
+            //}
 
             // leave the lock
             pthread_mutex_unlock(&sync_monitor->lock);
@@ -217,11 +217,11 @@ void* producer_vip(void * args){
             // use the log function to write to stdout
             output_request_added(type, sync_monitor->total_requests_prod, sync_monitor->requests_count_arr);
 
-            if(old_size == 0){ // if we just added an elemnt to empty queue
+            //if(old_size == 0){ // if we just added an elemnt to empty queue
                 // signal the queue is not empty, we added an element
                 sync_monitor->queue_empty_flag = NOT_EMPTY;
                 pthread_cond_signal(&sync_monitor->empty);
-            }
+            //}
 
             // leave the lock
             pthread_mutex_unlock(&sync_monitor->lock);
