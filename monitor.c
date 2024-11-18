@@ -109,6 +109,7 @@ void *producer_general(void *args){
     while(true){
         //produce a request, simulate by sleeping
         printf("General about to sleep\n");
+        fflush(stdout);
         sleep(sync_monitor->general_sleep/DENOM); // general request simulation
         printf("production complete in: %d milisec\n", sync_monitor->general_sleep);
         fflush(stdout);
@@ -191,6 +192,8 @@ void* producer_vip(void * args){
     RequestType type = VIP_REQ;
     // continue executing until production limit is met
     while(true){
+        printf("vip about to sleep for : %d\n", sync_monitor->vip_sleep);
+        fflush(stdout);
         //produce a request, simulate by sleeping
         sleep(sync_monitor->vip_sleep/DENOM); // VIP request simulation
         printf("VIP completed its sleep\n");
@@ -397,7 +400,7 @@ void* consumer_rev_9(void* args){
         RequestType req = req_typ;
         // decrease the queue size by 1
         //old queue size
-        int old = sync_monitor->queue_size;
+        //int old = sync_monitor->queue_size;
         sync_monitor->queue_size-=1;
         // since we are processing the current request type
         // capture current number of vips in queue
