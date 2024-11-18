@@ -228,15 +228,15 @@ void* producer_vip(void * args){
             // check if the queue is full
             while((sync_monitor->queue_size == MAX_QUEUE_SIZE) || (sync_monitor->requests_count_arr[VIP_REQ] == MAX_VIPS)){
 
-        //        printf("VIP must wait fur buffer to free\n");
-        //        fflush(stdout);              
+                printf("VIP must wait fur buffer to free\n");
+                fflush(stdout);              
                 // wait if the queue is full, once a spot opens go ahead
                 pthread_cond_wait(&sync_monitor->full, &sync_monitor->lock);
                 
             }
 
-            // printf("check the number of VIPs in the buffer: %d\n", sync_monitor->requests_count_arr[VIP_REQ]);
-            // fflush(stdout);            
+            printf("check the number of VIPs in the buffer: %d\n", sync_monitor->requests_count_arr[VIP_REQ]);
+            fflush(stdout);            
             // // check if the queue ahs maximum allowed vips
             // while(sync_monitor->requests_count_arr[VIP_REQ] == MAX_VIPS){
             //     //wait unitl signal
