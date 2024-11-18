@@ -302,6 +302,7 @@ void *consumer_t_x(void *args){
                 //printf("T_X releasing the lock and signaling consumption done\n");
                 //fflush(stdout);
                 // if other thread is waiting because queue is empty, let it know, TBI later
+                pthread_cond_signal(&sync_monitor->empty);// let the other thread knwo if waititng
                 pthread_mutex_unlock(&sync_monitor->lock);
                 sem_post(sync_monitor->barrier_t_x); // signal barrier sem
                 return NULL;
@@ -383,6 +384,7 @@ void* consumer_rev_9(void* args){
     //            //release the lock
       //          printf("Rev_9 released the lock, and signaled main\n");
      //           fflush(stdout);
+                pthread_cond_signal(&sync_monitor->empty);// let the other consumer know if waititng
                 pthread_mutex_unlock(&sync_monitor->lock);
                 sem_post(sync_monitor->barrier_rev_9); // signal barrier sem
                 return NULL;
