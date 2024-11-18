@@ -119,7 +119,7 @@ void *producer_general(void *args){
             pthread_mutex_unlock(&sync_monitor->lock);
             // if the requests produced has reached its limit, signal the main thread
             // wake up all threads
-            pthread_cond_broadcast(&sync_monitor->empty);
+            pthread_cond_signal(&sync_monitor->empty);
             sem_post(sync_monitor->barrier_gen);
             return NULL;
         }
@@ -180,7 +180,7 @@ void* producer_vip(void * args){
             //printf("VIP leaving\n");
             pthread_mutex_unlock(&sync_monitor->lock);
             // wake up all threads who are waiting
-            pthread_cond_broadcast(&sync_monitor->empty);
+            pthread_cond_signal(&sync_monitor->empty);
             // if the requests produced has reached its limit, signal the main thread
             sem_post(sync_monitor->barrier_vip);
             return NULL;
