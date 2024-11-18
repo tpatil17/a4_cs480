@@ -116,7 +116,7 @@ void *producer_general(void *args){
             printf("general is leaving\n");
             pthread_mutex_unlock(&sync_monitor->lock);
             // if the requests produced has reached its limit, signal the main thread
-            // signal empty
+            // wake up all threads
             pthread_cond_broadcast(&sync_monitor->empty);
             sem_post(sync_monitor->barrier_gen);
             return NULL;
@@ -174,7 +174,7 @@ void* producer_vip(void * args){
             //unlock
             printf("VIP leaving\n");
             pthread_mutex_unlock(&sync_monitor->lock);
-            // signal empty
+            // wake up all threads who are waiting
             pthread_cond_broadcast(&sync_monitor->empty);
             // if the requests produced has reached its limit, signal the main thread
             sem_post(sync_monitor->barrier_vip);
@@ -205,7 +205,7 @@ void* producer_vip(void * args){
             if(sync_monitor->queue_empty_flag == EMPTY){ // if we just added an elemnt to empty queue
                 // signal the queue is not empty, we added an element
                 sync_monitor->queue_empty_flag = NOT_EMPTY;
-                pthread_cond_signal(&sync_monitor->empty);
+                pthread_cond_broadcast(&sync_monitor->empty);
             }
 
             // leave the lock
@@ -227,7 +227,7 @@ void *consumer_t_x(void *args){
         // check if the queue is empty
         while(sync_monitor->queue_size == 0){
             // check if production is complete
-            if(sync_monitor->request_count == sync_monitor->max_requests-1){
+            if(sync_monitor->request_count == sync_monitor->max_requests){
                 // the threads work is done so produce the output history message
 
                 // if all the requests have been processed, signal the main
@@ -261,7 +261,7 @@ void *consumer_t_x(void *args){
             // set flag to not full as we just cleared an element
             sync_monitor->queue_full_flag = NOT_FULL;
             //signal the queue is not full anymore
-            pthread_cond_signal(&sync_monitor->full);
+            pthread_cond_broadcast(&sync_monitor->full);
         }
      
         // release the lock
@@ -286,7 +286,7 @@ void* consumer_rev_9(void* args){
         // check if the queue is empty
         while(sync_monitor->queue_size == 0){
             // check if production is complete
-            if(sync_monitor->request_count == sync_monitor->max_requests-1){
+            if(sync_monitor->request_count == sync_monitor->max_requests){
                 // the threads work is done so produce the output history message
 
                 // if all the requests have been processed, signal the main
@@ -320,7 +320,7 @@ void* consumer_rev_9(void* args){
             // set flag to not full as we just cleared an element
             sync_monitor->queue_full_flag = NOT_FULL;
             //signal the queue is not full anymore
-            pthread_cond_signal(&sync_monitor->full);
+            pthread_cond_broadcast(&sync_monitor->full);
         }
         // release the lock
         pthread_mutex_unlock(&sync_monitor->lock);
