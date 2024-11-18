@@ -107,12 +107,16 @@ void *producer_general(void *args){
         //produce a request, simulate by sleeping
         sleep(sync_monitor->general_sleep); // general request simulation
         //acquire lock
+        prinf("production complete\n");
         pthread_mutex_lock(&sync_monitor->lock);
+        printf("lock acquired\n");
         //First check if the number requests are less than the maximum allowed requests
         if(sync_monitor->request_count == sync_monitor->max_requests){
             //unlock
+            printf("general is leaving\n");
             pthread_mutex_unlock(&sync_monitor->lock);
             // if the requests produced has reached its limit, signal the main thread
+
             sem_post(sync_monitor->barrier_gen);
             return NULL;
         }
@@ -121,7 +125,7 @@ void *producer_general(void *args){
             sync_monitor->request_count +=1; // increase the number of requests count by 1
 
             // check if the queue is full
-            if(sync_monitor->queue_size == MAX_QUEUE_SIZE){
+            while(sync_monitor->queue_size == MAX_QUEUE_SIZE){
 
                 sync_monitor->queue_full_flag = FULL;// queue is full
                 // wait if the queue is full, once a spot opens acquire the lock
@@ -164,8 +168,10 @@ void* producer_vip(void * args){
         //acquire lock
         pthread_mutex_lock(&sync_monitor->lock);
         //First check if the number requests are less than the maximum allowed requests
+        printf("lock with vip\n");
         if(sync_monitor->request_count == sync_monitor->max_requests){
             //unlock
+            printf("VIP leaving\n");
             pthread_mutex_unlock(&sync_monitor->lock);
             // if the requests produced has reached its limit, signal the main thread
             sem_post(sync_monitor->barrier_vip);
@@ -175,7 +181,7 @@ void* producer_vip(void * args){
             // add the vip request
             sync_monitor->request_count +=1; // increase the number of requests count by 1
             // check if the queue is full
-            if(sync_monitor->queue_size == MAX_QUEUE_SIZE){
+            while(sync_monitor->queue_size == MAX_QUEUE_SIZE){
 
                 sync_monitor->queue_full_flag = FULL;// queue is full
                 // wait if the queue is full, once a spot opens go ahead
@@ -216,7 +222,7 @@ void *consumer_t_x(void *args){
         // acquire lock
         pthread_mutex_lock(&sync_monitor->lock);
         // check if the queue is empty
-        if(sync_monitor->queue_size == 0){
+        while(sync_monitor->queue_size == 0){
             // check if production is complete
             if(sync_monitor->request_count == sync_monitor->max_requests){
                 // the threads work is done so produce the output history message
@@ -274,7 +280,7 @@ void* consumer_rev_9(void* args){
         // acquire lock
         pthread_mutex_lock(&sync_monitor->lock);
         // check if the queue is empty
-        if(sync_monitor->queue_size == 0){
+        while(sync_monitor->queue_size == 0){
             // check if production is complete
             if(sync_monitor->request_count == sync_monitor->max_requests){
                 // the threads work is done so produce the output history message
