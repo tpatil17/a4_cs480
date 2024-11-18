@@ -197,7 +197,7 @@ void* producer_vip(void * args){
             // check if the queue ahs maximum allowed vips
             while(sync_monitor->requests_count_arr[VIP_REQ] == MAX_VIPS){
                 //wait unitl signal
-                pthread_cond_wait(&sync_monitor->full,&sync_monitor->lock);
+                pthread_cond_wait(&sync_monitor->vip_buf,&sync_monitor->lock);
             }
             // add the request to the queue
             push_to_queue(sync_monitor->wait_queue, VIP_REQ);
@@ -213,7 +213,7 @@ void* producer_vip(void * args){
             if(sync_monitor->queue_empty_flag == EMPTY){ // if we just added an elemnt to empty queue
                 // signal the queue is not empty, we added an element
                 sync_monitor->queue_empty_flag = NOT_EMPTY;
-                pthread_cond_broadcast(&sync_monitor->empty);
+                pthread_cond_signal(&sync_monitor->empty);
             }
 
             // leave the lock
@@ -271,11 +271,11 @@ void *consumer_t_x(void *args){
             // set flag to not full as we just cleared an element
             sync_monitor->queue_full_flag = NOT_FULL;
             //signal the queue is not full anymore
-            pthread_cond_broadcast(&sync_monitor->full);
+            pthread_cond_signal(&sync_monitor->full);
         }
         // if the handled reques was vip and the buffer has a space open for vip
         if(req_typ == VIP_REQ && vip_ctr == MAX_VIPS){
-            pthread_cond_signal(&sync_monitor->full);
+            pthread_cond_signal(&sync_monitor->vip_buf);
         }
      
         // release the lock
@@ -336,11 +336,11 @@ void* consumer_rev_9(void* args){
             // set flag to not full as we just cleared an element
             sync_monitor->queue_full_flag = NOT_FULL;
             //signal the queue is not full anymore
-            pthread_cond_broadcast(&sync_monitor->full);
+            pthread_cond_signal(&sync_monitor->full);
         }
         // if the request handeled was vip signal vip, and the queue has space for vip
         if(req_typ == VIP_REQ && vips == MAX_VIPS){
-            pthread_cond_signal(&sync_monitor->full);
+            pthread_cond_signal(&sync_monitor->vip_buf);
         }
         // release the lock
         pthread_mutex_unlock(&sync_monitor->lock);
