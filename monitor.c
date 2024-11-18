@@ -125,8 +125,6 @@ void *producer_general(void *args){
         }
         else{
 
-            sync_monitor->request_count +=1; // increase the number of requests count by 1
-
             // check if the queue is full
             while(sync_monitor->queue_size == MAX_QUEUE_SIZE){
 
@@ -146,15 +144,14 @@ void *producer_general(void *args){
             //old queue size
             int old_size = sync_monitor->queue_size;
             sync_monitor->queue_size+=1;
-    //        printf("queue size: %d\n", sync_monitor->queue_size);
+            sync_monitor->request_count +=1; // increase the number of requests count by 1
+
             // use the log function to write to stdout
             output_request_added(type, sync_monitor->total_requests_prod, sync_monitor->requests_count_arr);
-
-            //if(old_size == 0){ // if we just added an elemnt to empty queue
-                // signal the queue is not empty, we added an element
-                sync_monitor->queue_empty_flag = NOT_EMPTY;
+             // Signal consumers if the queue was empty, we added an element
+            if (sync_monitor->queue_size == 1) {
                 pthread_cond_signal(&sync_monitor->empty);
-            //}
+            }
 
             // leave the lock
             pthread_mutex_unlock(&sync_monitor->lock);
@@ -187,22 +184,22 @@ void* producer_vip(void * args){
             return NULL;
         }
         else{
-            // add the vip request
-            sync_monitor->request_count +=1; // increase the number of requests count by 1
-            // check if the queue is full
-            while(sync_monitor->queue_size == MAX_QUEUE_SIZE){
-
-                sync_monitor->queue_full_flag = FULL;// queue is full
-                // wait if the queue is full, once a spot opens go ahead
-        //        printf("VIP waiting queue full\n");
-                pthread_cond_wait(&sync_monitor->full, &sync_monitor->lock);
-                
-            }
+ 
+ 
             // check if the queue ahs maximum allowed vips
             while(sync_monitor->requests_count_arr[VIP_REQ] == MAX_VIPS){
                 //wait unitl signal
         //        printf("vip waiting, too many vips\n");
                 pthread_cond_wait(&sync_monitor->vip_buf,&sync_monitor->lock);
+            }
+            // check if the queue is full
+            while(sync_monitor->queue_size == MAX_QUEUE_SIZE){
+
+              
+                // wait if the queue is full, once a spot opens go ahead
+
+                pthread_cond_wait(&sync_monitor->full, &sync_monitor->lock);
+                
             }
             // add the request to the queue
             push_to_queue(sync_monitor->wait_queue, VIP_REQ);
@@ -211,17 +208,17 @@ void* producer_vip(void * args){
             //update total produced
             sync_monitor->total_requests_prod[VIP_REQ] +=1;
             //increment the queue counter by 1
-            // old size
-            int old_size = sync_monitor->queue_size;
             sync_monitor->queue_size+=1;
+                       // add the vip request
+            sync_monitor->request_count +=1; // increase the number of requests count by 1
             // use the log function to write to stdout
             output_request_added(type, sync_monitor->total_requests_prod, sync_monitor->requests_count_arr);
 
-            //if(old_size == 0){ // if we just added an elemnt to empty queue
+            if(sync_monitor->queue_size == 1){ // if we just added an elemnt to empty queue
                 // signal the queue is not empty, we added an element
-                sync_monitor->queue_empty_flag = NOT_EMPTY;
+               
                 pthread_cond_signal(&sync_monitor->empty);
-            //}
+            }
 
             // leave the lock
             pthread_mutex_unlock(&sync_monitor->lock);
@@ -251,18 +248,13 @@ void *consumer_t_x(void *args){
                 sem_post(sync_monitor->barrier_t_x); // signal barrier sem
                 return NULL;
             }
-            // flag the queue is empty
-            sync_monitor->queue_empty_flag = EMPTY;
-            // wait till someone signals that the queue is not empty
-        //    printf("t-x is waiting\n");
+            // wait till queue has an element
             pthread_cond_wait(&sync_monitor->empty, &sync_monitor->lock);
         }
         int req_typ = pop_queue(sync_monitor->wait_queue);// once lock is acquired above, fetch the request
         // request type
         RequestType req = req_typ;
         // decrease the queue size by 1
-        //old queue size
-        int old_size = sync_monitor->queue_size;
         sync_monitor->queue_size-=1;
         // since we are processing the current request type
         // store the value of vips in queue prior to current process
@@ -288,9 +280,9 @@ void *consumer_t_x(void *args){
         //    printf("vip good to add\n");
             pthread_cond_signal(&sync_monitor->vip_buf);
         }
-        if(old_size == MAX_QUEUE_SIZE){
+        //if(old_size == MAX_QUEUE_SIZE){
             pthread_cond_signal(&sync_monitor->full);
-        }
+        //}
         
         // release the lock
         pthread_mutex_unlock(&sync_monitor->lock);
@@ -347,23 +339,14 @@ void* consumer_rev_9(void* args){
         output_request_removed(type, req, 
         sync_monitor->consumed_count_arr[REV_9], sync_monitor->requests_count_arr 
         );
-        //signal queue is not full
-       //if(old == MAX_QUEUE_SIZE){
-            // set flag to not full as we just cleared an element
-            sync_monitor->queue_full_flag = NOT_FULL;
-            //signal the queue is not full anymore
-         //   printf("queue no longer full\n");
-
-        //}
-        // if the request handeled was vip signal vip, and the queue has space for vip
+        // if the popped value was vip and we have empty vip
         if(req_typ == VIP_REQ && vips == MAX_VIPS){
-        //    printf("vip good to be added\n");
+
             pthread_cond_signal(&sync_monitor->vip_buf);
         }
-        if(old == MAX_QUEUE_SIZE){
-            pthread_cond_signal(&sync_monitor->full);
-        }
-        
+
+        pthread_cond_signal(&sync_monitor->full);
+
         // release the lock
         pthread_mutex_unlock(&sync_monitor->lock);
         // check what kind of request
