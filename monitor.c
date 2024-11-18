@@ -226,7 +226,7 @@ void* producer_vip(void * args){
         //    fflush(stdout);
 
             // check if the queue is full
-            while(sync_monitor->queue_size == MAX_QUEUE_SIZE){
+            while((sync_monitor->queue_size == MAX_QUEUE_SIZE) || (sync_monitor->requests_count_arr[VIP_REQ] == MAX_VIPS)){
 
         //        printf("VIP must wait fur buffer to free\n");
         //        fflush(stdout);              
