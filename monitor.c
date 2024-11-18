@@ -128,8 +128,8 @@ void *producer_general(void *args){
             //fflush(stdout);
             // if the requests produced has reached its limit, signal the main thread
             // wake up all threads
-            printf("general will signal consumers waiting on empty to move on\n");
-            fflush(stdout);
+        //    printf("general will signal consumers waiting on empty to move on\n");
+        //    fflush(stdout);
             pthread_cond_signal(&sync_monitor->empty);
             sem_post(sync_monitor->barrier_gen);
             return NULL;
@@ -210,8 +210,8 @@ void* producer_vip(void * args){
         //    printf("max requests have been met, VIP leaving\n");
         //    fflush(stdout);
             pthread_mutex_unlock(&sync_monitor->lock);
-            printf("VIP has released the lock\n");
-            fflush(stdout);
+        //    printf("VIP has released the lock\n");
+        //    fflush(stdout);
             // wake up all threads who are waiting
             pthread_cond_signal(&sync_monitor->empty);
 
@@ -228,15 +228,15 @@ void* producer_vip(void * args){
             // check if the queue is full
             while((sync_monitor->queue_size == MAX_QUEUE_SIZE) || (sync_monitor->requests_count_arr[VIP_REQ] == MAX_VIPS)){
 
-                printf("VIP must wait fur buffer to free\n");
-                fflush(stdout);              
+            //    printf("VIP must wait fur buffer to free\n");
+            //    fflush(stdout);              
                 // wait if the queue is full, once a spot opens go ahead
                 pthread_cond_wait(&sync_monitor->full, &sync_monitor->lock);
                 
             }
 
-            printf("check the number of VIPs in the buffer: %d\n", sync_monitor->requests_count_arr[VIP_REQ]);
-            fflush(stdout);            
+        //    printf("check the number of VIPs in the buffer: %d\n", sync_monitor->requests_count_arr[VIP_REQ]);
+        //    fflush(stdout);            
             // // check if the queue ahs maximum allowed vips
             // while(sync_monitor->requests_count_arr[VIP_REQ] == MAX_VIPS){
             //     //wait unitl signal
@@ -299,16 +299,16 @@ void *consumer_t_x(void *args){
               //  fflush(stdout);
                 // if all the requests have been processed, signal the main
                 //release the lock
-                printf("T_X releasing the lock and signaling consumption done\n");
-                fflush(stdout);
+            //   printf("T_X releasing the lock and signaling consumption done\n");
+            //    fflush(stdout);
                 // if other thread is waiting because queue is empty, let it know, TBI later
                 pthread_cond_signal(&sync_monitor->empty);// let the other thread knwo if waititng
                 pthread_mutex_unlock(&sync_monitor->lock);
                 sem_post(sync_monitor->barrier_t_x); // signal barrier sem
                 return NULL;
             }
-            printf("T_X waiting for queue to populate\n");
-            fflush(stdout);
+        //    printf("T_X waiting for queue to populate\n");
+        //    fflush(stdout);
             // wait till queue has an element
             pthread_cond_wait(&sync_monitor->empty, &sync_monitor->lock);
         }
@@ -382,15 +382,15 @@ void* consumer_rev_9(void* args){
 
                 // if all the requests have been processed, signal the main
     //            //release the lock
-                printf("Rev_9 released the lock, and signaled main\n");
-                fflush(stdout);
+            //    printf("Rev_9 released the lock, and signaled main\n");
+            //    fflush(stdout);
                 pthread_cond_signal(&sync_monitor->empty);// let the other consumer know if waititng
                 pthread_mutex_unlock(&sync_monitor->lock);
                 sem_post(sync_monitor->barrier_rev_9); // signal barrier sem
                 return NULL;
             }
-            printf("Rev_9 is waiting for queue to populate\n");
-            fflush(stdout);
+            //printf("Rev_9 is waiting for queue to populate\n");
+            //fflush(stdout);
             // wait till someone signals that the queue is not empty
 
             pthread_cond_wait(&sync_monitor->empty, &sync_monitor->lock);
