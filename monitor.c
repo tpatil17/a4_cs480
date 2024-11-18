@@ -106,7 +106,7 @@ void *producer_general(void *args){
     //Assign request type
     RequestType type = GEN_REQ;
     // continue executing until production limit is met
-    while(true){
+    while(sync_monitor->request_count != sync_monitor->max_requests){
         //produce a request, simulate by sleeping
         //printf("General about to sleep for %d\n", sync_monitor->general_sleep);
         //fflush(stdout);
@@ -183,6 +183,8 @@ void *producer_general(void *args){
 
         }
     }
+    sem_post(sync_monitor->barrier_gen);
+    return NULL;
 }
 
 void* producer_vip(void * args){
@@ -191,7 +193,7 @@ void* producer_vip(void * args){
     //Assign request type
     RequestType type = VIP_REQ;
     // continue executing until production limit is met
-    while(true){
+    while(sync_monitor->request_count != sync_monitor->max_requests){
         //printf("vip about to sleep for : %d\n", sync_monitor->vip_sleep);
         //fflush(stdout);
         //produce a request, simulate by sleeping
@@ -275,6 +277,8 @@ void* producer_vip(void * args){
 
         }
     }
+    sem_post(sync_monitor->barrier_vip);
+    return NULL;
 }
 
 void *consumer_t_x(void *args){

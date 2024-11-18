@@ -52,6 +52,7 @@ int main(int argc, char* argv[]){
     syn_monitor->t_x_sleep = t_x_time;
     syn_monitor->vip_sleep = vip_time;
     syn_monitor->rev_9_sleep = rev_9_time;
+    syn_monitor->max_requests = max_requests;
 
 
 

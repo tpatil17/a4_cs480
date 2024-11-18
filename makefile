@@ -12,7 +12,7 @@
 # Specify compiler
 CC = gcc
 # Compiler flags, if you want debug info, add -g
-CCFLAGS = -std=c11 -g -Wall -Wextra -c -D_POSIX_C_SOURCE=199309L
+CCFLAGS = -std=c11 -g -Wall -Wextra -c -D_POSIX_C_SOURCE=199309L -fsanitize=thread -pthread
 CFLAGS = -g -c
 
 # object files
