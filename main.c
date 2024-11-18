@@ -52,6 +52,12 @@ int main(int argc, char* argv[]){
     syn_monitor->t_x_sleep = t_x_time;
     syn_monitor->vip_sleep = vip_time;
     syn_monitor->rev_9_sleep = rev_9_time;
+
+    printf("general time: %d\n", gen_time);
+    printf("vip sleep: %d\n", vip_time);
+    printf("t_x sleep: %d\n", t_x_time);
+    printf("rev_9 sleep: %d\n", rev_9_time);
+
     
 
     pthread_t general_greeter; // bot that greets/produces general seat members

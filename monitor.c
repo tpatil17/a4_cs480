@@ -338,11 +338,11 @@ void *consumer_t_x(void *args){
              pthread_cond_signal(&sync_monitor->full);
         }
 
-        if(sync_monitor->queue_size == MAX_QUEUE_SIZE -1){
+        //if(sync_monitor->queue_size == MAX_QUEUE_SIZE -1){
     //        printf("T_X is signaling the queue is not full\n");
     //        fflush(stdout);
             pthread_cond_signal(&sync_monitor->full);
-        }
+        //}
     //    printf("T_X is releasing the lock\n");
     ///    fflush(stdout);
         // release the lock
@@ -422,12 +422,12 @@ void* consumer_rev_9(void* args){
 
              pthread_cond_signal(&sync_monitor->full);
         }
-        if(sync_monitor->queue_size == MAX_QUEUE_SIZE-1){
+     //   if(sync_monitor->queue_size == MAX_QUEUE_SIZE-1){
     //        printf("request was consumed by rev_9, signal queue is free\n");
     //        fflush(stdout);
 
             pthread_cond_signal(&sync_monitor->full);
-        }
+       // }
         // release the lock
     //    printf("rev_9 is releasing the lock\n");
     //    fflush(stdout);
