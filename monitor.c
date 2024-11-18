@@ -108,6 +108,7 @@ void *producer_general(void *args){
     // continue executing until production limit is met
     while(true){
         //produce a request, simulate by sleeping
+        printf("General about to sleep\n");
         sleep(sync_monitor->general_sleep/DENOM); // general request simulation
         printf("production complete in: %d milisec\n", sync_monitor->general_sleep);
         fflush(stdout);
