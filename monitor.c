@@ -282,7 +282,7 @@ void* consumer_rev_9(void* args){
         // check if the queue is empty
         while(sync_monitor->queue_size == 0){
             // check if production is complete
-            if(sync_monitor->request_count == sync_monitor->max_requests){
+            if(sync_monitor->request_count == sync_monitor->max_requests-1){
                 // the threads work is done so produce the output history message
 
                 // if all the requests have been processed, signal the main
