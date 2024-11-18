@@ -143,6 +143,7 @@ void *producer_general(void *args){
             sync_monitor->total_requests_prod[GEN_REQ] +=1;
             //increment the queue counter by 1
             sync_monitor->queue_size+=1;
+            printf("queue size: %d\n", sync_monitor->queue_size);
             // use the log function to write to stdout
             output_request_added(type, sync_monitor->total_requests_prod, sync_monitor->requests_count_arr);
 
@@ -196,7 +197,7 @@ void* producer_vip(void * args){
             // check if the queue ahs maximum allowed vips
             while(sync_monitor->requests_count_arr[VIP_REQ] == MAX_VIPS){
                 //wait unitl signal
-                pthread_cond_wait(&sync_monitor->vip_buf,&sync_monitor->lock);
+                pthread_cond_wait(&sync_monitor->full,&sync_monitor->lock);
             }
             // add the request to the queue
             push_to_queue(sync_monitor->wait_queue, VIP_REQ);
@@ -255,7 +256,9 @@ void *consumer_t_x(void *args){
         // decrease the queue size by 1
         sync_monitor->queue_size-=1;
         // since we are processing the current request type
-        // decrease its counter from shared variable
+        // store the value of vips in queue prior to current process
+        int vip_ctr = sync_monitor->requests_count_arr[VIP_REQ];
+        // decrease the current request types ctr
         sync_monitor->requests_count_arr[req_typ]-=1;
         // increase the consumed count
         sync_monitor->consumed_count_arr[T_X][req_typ]+=1;
@@ -270,9 +273,9 @@ void *consumer_t_x(void *args){
             //signal the queue is not full anymore
             pthread_cond_broadcast(&sync_monitor->full);
         }
-        // if the handled reques was vip
-        if(req_typ == VIP_REQ){
-            pthread_cond_signal(&sync_monitor->vip_buf);
+        // if the handled reques was vip and the buffer has a space open for vip
+        if(req_typ == VIP_REQ && vip_ctr == MAX_VIPS){
+            pthread_cond_signal(&sync_monitor->full);
         }
      
         // release the lock
@@ -318,6 +321,8 @@ void* consumer_rev_9(void* args){
         // decrease the queue size by 1
         sync_monitor->queue_size-=1;
         // since we are processing the current request type
+        // capture current number of vips in queue
+        int vips = sync_monitor->requests_count_arr[VIP_REQ];
         // decrease its counter from shared variable
         sync_monitor->requests_count_arr[req_typ]-=1;
         // increase the consumed count
@@ -333,9 +338,9 @@ void* consumer_rev_9(void* args){
             //signal the queue is not full anymore
             pthread_cond_broadcast(&sync_monitor->full);
         }
-        // if the request handeled was vip signal vip
-        if(req_typ == VIP_REQ){
-            pthread_cond_signal(&sync_monitor->vip_buf);
+        // if the request handeled was vip signal vip, and the queue has space for vip
+        if(req_typ == VIP_REQ && vips == MAX_VIPS){
+            pthread_cond_signal(&sync_monitor->full);
         }
         // release the lock
         pthread_mutex_unlock(&sync_monitor->lock);
