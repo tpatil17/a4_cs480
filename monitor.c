@@ -258,6 +258,8 @@ void *consumer_t_x(void *args){
         // request type
         RequestType req = req_typ;
         // decrease the queue size by 1
+        //old queue size
+        int old_size = sync_monitor->queue_size;
         sync_monitor->queue_size-=1;
         // since we are processing the current request type
         // store the value of vips in queue prior to current process
@@ -271,7 +273,7 @@ void *consumer_t_x(void *args){
         sync_monitor->consumed_count_arr[T_X], sync_monitor->requests_count_arr 
         );
         //signal queue is not full
-        if(sync_monitor->queue_full_flag == FULL){
+        if(old_size == MAX_QUEUE_SIZE){
             // set flag to not full as we just cleared an element
             sync_monitor->queue_full_flag = NOT_FULL;
             //signal the queue is not full anymore
@@ -323,6 +325,8 @@ void* consumer_rev_9(void* args){
         // request type
         RequestType req = req_typ;
         // decrease the queue size by 1
+        //old queue size
+        int old = sync_monitor->queue_size;
         sync_monitor->queue_size-=1;
         // since we are processing the current request type
         // capture current number of vips in queue
@@ -336,7 +340,7 @@ void* consumer_rev_9(void* args){
         sync_monitor->consumed_count_arr[REV_9], sync_monitor->requests_count_arr 
         );
         //signal queue is not full
-        if(sync_monitor->queue_full_flag == FULL){
+        if(old == MAX_QUEUE_SIZE){
             // set flag to not full as we just cleared an element
             sync_monitor->queue_full_flag = NOT_FULL;
             //signal the queue is not full anymore
