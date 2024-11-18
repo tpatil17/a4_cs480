@@ -142,12 +142,14 @@ void *producer_general(void *args){
             //update total produced
             sync_monitor->total_requests_prod[GEN_REQ] +=1;
             //increment the queue counter by 1
+            //old queue size
+            int old_size = sync_monitor->queue_size;
             sync_monitor->queue_size+=1;
             printf("queue size: %d\n", sync_monitor->queue_size);
             // use the log function to write to stdout
             output_request_added(type, sync_monitor->total_requests_prod, sync_monitor->requests_count_arr);
 
-            if(sync_monitor->queue_empty_flag == EMPTY){ // if we just added an elemnt to empty queue
+            if(old_size = 0){ // if we just added an elemnt to empty queue
                 // signal the queue is not empty, we added an element
                 sync_monitor->queue_empty_flag = NOT_EMPTY;
                 pthread_cond_broadcast(&sync_monitor->empty);
@@ -206,11 +208,13 @@ void* producer_vip(void * args){
             //update total produced
             sync_monitor->total_requests_prod[VIP_REQ] +=1;
             //increment the queue counter by 1
+            // old size
+            int old_size = 0;
             sync_monitor->queue_size+=1;
             // use the log function to write to stdout
             output_request_added(type, sync_monitor->total_requests_prod, sync_monitor->requests_count_arr);
 
-            if(sync_monitor->queue_empty_flag == EMPTY){ // if we just added an elemnt to empty queue
+            if(old_size == 0){ // if we just added an elemnt to empty queue
                 // signal the queue is not empty, we added an element
                 sync_monitor->queue_empty_flag = NOT_EMPTY;
                 pthread_cond_broadcast(&sync_monitor->empty);
@@ -271,7 +275,7 @@ void *consumer_t_x(void *args){
             // set flag to not full as we just cleared an element
             sync_monitor->queue_full_flag = NOT_FULL;
             //signal the queue is not full anymore
-            pthread_cond_signal(&sync_monitor->full);
+            pthread_cond_broadcast(&sync_monitor->full);
         }
         // if the handled reques was vip and the buffer has a space open for vip
         if(req_typ == VIP_REQ && vip_ctr == MAX_VIPS){
@@ -336,7 +340,7 @@ void* consumer_rev_9(void* args){
             // set flag to not full as we just cleared an element
             sync_monitor->queue_full_flag = NOT_FULL;
             //signal the queue is not full anymore
-            pthread_cond_signal(&sync_monitor->full);
+            pthread_cond_broadcast(&sync_monitor->full);
         }
         // if the request handeled was vip signal vip, and the queue has space for vip
         if(req_typ == VIP_REQ && vips == MAX_VIPS){
