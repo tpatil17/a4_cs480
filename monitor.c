@@ -152,7 +152,7 @@ void *producer_general(void *args){
             if(old_size == 0){ // if we just added an elemnt to empty queue
                 // signal the queue is not empty, we added an element
                 sync_monitor->queue_empty_flag = NOT_EMPTY;
-                pthread_cond_broadcast(&sync_monitor->empty);
+                pthread_cond_signal(&sync_monitor->empty);
             }
 
             // leave the lock
@@ -217,7 +217,7 @@ void* producer_vip(void * args){
             if(old_size == 0){ // if we just added an elemnt to empty queue
                 // signal the queue is not empty, we added an element
                 sync_monitor->queue_empty_flag = NOT_EMPTY;
-                pthread_cond_broadcast(&sync_monitor->empty);
+                pthread_cond_signal(&sync_monitor->empty);
             }
 
             // leave the lock
@@ -277,7 +277,7 @@ void *consumer_t_x(void *args){
             // set flag to not full as we just cleared an element
             sync_monitor->queue_full_flag = NOT_FULL;
             //signal the queue is not full anymore
-            pthread_cond_broadcast(&sync_monitor->full);
+            pthread_cond_signal(&sync_monitor->full);
         }
         // if the handled reques was vip and the buffer has a space open for vip
         if(req_typ == VIP_REQ && vip_ctr == MAX_VIPS){
@@ -344,7 +344,7 @@ void* consumer_rev_9(void* args){
             // set flag to not full as we just cleared an element
             sync_monitor->queue_full_flag = NOT_FULL;
             //signal the queue is not full anymore
-            pthread_cond_broadcast(&sync_monitor->full);
+            pthread_cond_signal(&sync_monitor->full);
         }
         // if the request handeled was vip signal vip, and the queue has space for vip
         if(req_typ == VIP_REQ && vips == MAX_VIPS){
