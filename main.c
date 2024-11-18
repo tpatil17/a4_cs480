@@ -48,10 +48,10 @@ int main(int argc, char* argv[]){
     monitor* syn_monitor = init_monitor(max_requests);
 
     //asign sleep times
-    syn_monitor->general_sleep = gen_time/DENOM; // convert time to miliseconds
-    syn_monitor->t_x_sleep = t_x_time/DENOM;
-    syn_monitor->vip_sleep = vip_time/DENOM;
-    syn_monitor->rev_9_sleep = rev_9_time/DENOM;
+    syn_monitor->general_sleep = gen_time; 
+    syn_monitor->t_x_sleep = t_x_time;
+    syn_monitor->vip_sleep = vip_time;
+    syn_monitor->rev_9_sleep = rev_9_time;
     
 
     pthread_t general_greeter; // bot that greets/produces general seat members

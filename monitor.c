@@ -107,7 +107,7 @@ void *producer_general(void *args){
     // continue executing until production limit is met
     while(true){
         //produce a request, simulate by sleeping
-        sleep(sync_monitor->general_sleep); // general request simulation
+        sleep(sync_monitor->general_sleep/DENOM); // general request simulation
         printf("production complete in: %f sec\n", sync_monitor->general_sleep);
         fflush(stdout);
         //acquire lock
@@ -190,7 +190,7 @@ void* producer_vip(void * args){
     // continue executing until production limit is met
     while(true){
         //produce a request, simulate by sleeping
-        sleep(sync_monitor->vip_sleep); // VIP request simulation
+        sleep(sync_monitor->vip_sleep/DENOM); // VIP request simulation
         printf("VIP completed its sleep\n");
         fflush(stdout);
         //acquire lock
@@ -345,7 +345,7 @@ void *consumer_t_x(void *args){
         // simulate
         printf("T_X sleeping for : %f\n", sync_monitor->t_x_sleep);
         fflush(stdout);
-        sleep(sync_monitor->t_x_sleep);
+        sleep(sync_monitor->t_x_sleep/DENOM);
         printf("T_X woken up");
         fflush(stdout);
 
@@ -429,7 +429,7 @@ void* consumer_rev_9(void* args){
         // check what kind of request
         // simulate
         printf("rev_9 is sleeping\n");
-        sleep(sync_monitor->rev_9_sleep);
+        sleep(sync_monitor->rev_9_sleep/DENOM);
         printf("rev_9 is awake and ready\n");
 
     }          
