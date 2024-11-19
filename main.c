@@ -76,11 +76,11 @@ int main(int argc, char* argv[]){
     pthread_create(&rev_9, NULL, consumer_rev_9, syn_monitor);
 
     // wait signal barrier for general producer and wait on it
-    sem_wait(syn_monitor->barrier_gen);
-    sem_wait(syn_monitor->barrier_vip);
+    sem_wait(syn_monitor->barrier);
+    sem_wait(syn_monitor->barrier);
     // wait on the consumers to fininsh
-    sem_wait(syn_monitor->barrier_t_x);
-    sem_wait(syn_monitor->barrier_rev_9);
+    sem_wait(syn_monitor->barrier);
+    sem_wait(syn_monitor->barrier);
 
     // join all threads
     pthread_join(general_greeter, NULL);

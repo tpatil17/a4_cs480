@@ -22,10 +22,7 @@ typedef struct monitor {
     pthread_cond_t vip_buf; // conditon variable to signal vip buffer is awailable
     queue_t* wait_queue; // bounded buffer
     pthread_mutex_t lock; // mutext lock to synchronize buffer access
-    sem_t* barrier_gen; // barrier semaphore for general greater
-    sem_t* barrier_vip; // barrier semaphore for general greater
-    sem_t* barrier_t_x; // barrier semaphore for general greater
-    sem_t* barrier_rev_9; // barrier semaphore for general greater
+    sem_t* barrier; // barrier semaphore for the main thread
     int general_sleep; //sleep time for general request
     int vip_sleep; // sleep time for vip request
     int t_x_sleep; // sleep time for t-x bot
